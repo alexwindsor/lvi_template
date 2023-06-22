@@ -9,7 +9,7 @@ defineProps({
 </script>
 
 <template>
-    <Head title="LaraVueInert Template" />
+    <Head title="Laravel10|Vue3|Inertia1.0 Template" />
     <Layout page="Home Page" :user="user">
 
         Welcome to my website
