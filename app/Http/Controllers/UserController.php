@@ -52,6 +52,7 @@ class UserController extends Controller
 
 
     public function logout() {
+
         auth()->logout();
         return redirect('/');
     }
@@ -59,6 +60,7 @@ class UserController extends Controller
 
     public function update() {
 
+        // validate
         $fields = request()->validate([
             'name' => ['required', 'min:2', 'max:64'],
             'email' => ['required', 'min:8', 'max:96', Rule::unique('users')->ignore(auth()->user()->id)],
@@ -67,15 +69,15 @@ class UserController extends Controller
             'new_password_confirmation' => ['nullable', 'min:8', 'max:32', 'same:new_password']
         ]);
 
-        $auth['email'] = auth()->user()->email;
-        $auth['password'] = $fields['password'];
-
-        if (! auth()->attempt($auth)) {
+        // check that the password is correct and return back with custom error if not
+        if (! $this->authenticate($fields['password'])) {
             return back()->withErrors(['password' => 'Incorrect password'])->withInput();
         }
 
+        // update the user name and email, and new password if necessary
         $user = User::find(auth()->user()->id);
         $user->name = $fields['name'];
+        $user->email = $fields['email'];
         if ($fields['new_password'] && $fields['new_password_confirmation']) {
             $user->password = Hash::make($fields['new_password']);
         }
@@ -86,14 +88,14 @@ class UserController extends Controller
 
 
     public function destroy() {
-        
+
+        // validate
         $fields = request()->validate([
             'password' => ['required']
         ]);
 
-        $fields['email'] = auth()->user()->email;
-
-        if (! auth()->attempt($fields)) {
+        // check that the password is correct and return back with custom error if not
+        if (! $this->authenticate($fields['password'])) {
             return back()->withErrors(['password' => 'Incorrect password'])->withInput();
         }
 
@@ -104,6 +106,17 @@ class UserController extends Controller
     }
 
 
+    private function authenticate($password) {
 
+        $auth = [
+            'email' => auth()->user()->email,
+            'password' => $password
+        ];
+
+        // check that the password is correct and return back with custom error if not
+        if (! auth()->attempt($auth)) return false;
+
+        return true;
+    }
 
 }

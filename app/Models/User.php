@@ -30,13 +30,4 @@ class User extends Authenticatable
     ];
 
 
-
-
-
-    public function logs(): HasMany
-    {
-        return $this->hasMany(Logs::class);
-    }
-
-
 }

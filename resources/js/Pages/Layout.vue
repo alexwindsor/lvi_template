@@ -1,31 +1,37 @@
 <script setup>
-import { Link } from '@inertiajs/vue3'
-import { baseUrl } from '@/base_url.js'
+  import { Link } from '@inertiajs/vue3'
+  import { base_url } from '@/base_url.js'
 
-defineProps({
-    page: String,
-    user: Object
-})
-
+  defineProps({
+      page: String,
+      user: Object
+  })
 </script>
 
 <template>
 
-<h1 class="text-5xl">{{ page }}</h1>
+  <div class="m-8">
 
-<br><br>
+    <h1 class="text-center text-5xl">
+      <Link :href="base_url">My Project</Link>
+    </h1>
 
-<div v-if="user">
-  <Link :href="baseUrl.base_url + 'edit_profile'">Edit Profile</Link> | <Link :href="baseUrl.base_url + 'logout'">Logout</Link>
-</div>
+    <h2 class="text-3xl">{{ page }}</h2>
 
-<div v-if="! user">
-  <Link :href="baseUrl.base_url + 'login'">Login</Link> | <Link :href="baseUrl.base_url + 'register'">Register</Link>
-</div>
+    <div class="text-sm m-3">
+      <div v-if="user">
+        <Link :href="base_url + 'edit_profile'">Edit Profile</Link> | <Link :href="base_url + 'logout'">Logout</Link>
+      </div>
 
-<br><br>
+      <div v-else>
+        <Link :href="base_url + 'login'">Login</Link> | <Link :href="base_url + 'register'">Register</Link>
+      </div>
+    </div>
 
-<slot />
+    <div class="m-12 text-base">
+      <slot />
+    </div>
 
+  </div>
 
 </template>
