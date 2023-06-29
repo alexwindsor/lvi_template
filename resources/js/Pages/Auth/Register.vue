@@ -1,28 +1,27 @@
 <script setup>
-import { Head, router } from '@inertiajs/vue3';
-import Layout from '@/Pages/Layout.vue'
-import { baseUrl } from '@/base_url.js'
-import { reactive } from 'vue'
+    import { Head, router } from '@inertiajs/vue3';
+    import Layout from '@/Pages/Layout.vue'
+    import { reactive } from 'vue'
+    import { base_url } from '@/base_url.js'
 
-defineProps({
-    errors: Object
-})
+    defineProps({
+        errors: Object
+    })
 
-const form = reactive({
-    name: '',
-    email: '',
-    password: '',
-    password_confirmation: '',
-});
+    const form = reactive({
+        name: '',
+        email: '',
+        password: '',
+        password_confirmation: '',
+    });
 
-function submit() {
-    router.post(baseUrl.base_url + 'register', form)
-}
-
+    function submit() {
+        router.post(base_url + 'register', form)
+    }
 </script>
 
 <template>
-    <Head title="register" />
+    <Head title="REGISTER | Laravel 10, Vue3, Inertia 1.0 template" />
 
     <Layout page="Register">
         
@@ -56,7 +55,7 @@ function submit() {
                 <div v-if="errors.password_confirmation" class="text-xs text-red-500">{{ errors.password_confirmation }}</div>
             </div>
 
-            <button class="border-2 border-black rounded p-1 mt-5 text-black text-2xl" type="submit">Register</button>
+            <button class="border-2 border-black rounded py-1 px-5 mt-2 text-black text-2xl" type="submit">Register</button>
         </div>
     </form>
     

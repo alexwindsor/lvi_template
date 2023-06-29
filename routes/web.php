@@ -13,7 +13,7 @@ Route::get('/', function () {
     ]);
 });
 
-
+// auth
 Route::get('/login', function () {
     return Inertia::render('Auth/Login');
 })->middleware('guest')->name('login');
@@ -40,5 +40,6 @@ Route::get('/edit_profile', function () {
     ]);
 })->middleware('auth')->name('edit_profile');
 
-Route::post('/update_profile', [UserController::class, 'update'])->middleware('auth');
-Route::post('/delete_account', [UserController::class, 'destroy'])->middleware('auth');
+Route::put('/update_profile', [UserController::class, 'update'])->middleware('auth');
+
+Route::put('/delete_account', [UserController::class, 'destroy'])->middleware('auth'); // delete would be better method here but inertia doesn't send data using router.delete unfortunately - hopefully they will fix this in a newer version
