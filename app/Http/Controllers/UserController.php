@@ -78,7 +78,7 @@ class UserController extends Controller
         $user = User::find(auth()->user()->id);
         $user->name = $fields['name'];
         $user->email = $fields['email'];
-        if ($fields['new_password'] && $fields['new_password_confirmation']) {
+        if (isset($fields['new_password']) && $fields['new_password_confirmation']) {
             $user->password = Hash::make($fields['new_password']);
         }
         $user->save();
