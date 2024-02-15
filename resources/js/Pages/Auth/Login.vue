@@ -10,7 +10,8 @@
 
     const form = reactive({
         email: null,
-        password: null
+        password: null,
+        remember: false
     });
 
     function submit() {
@@ -22,7 +23,7 @@
 
     <Head title="LOGIN | Laravel 10, Vue3, Inertia 1.0 template" />
     <Layout page="Login">
-    
+
         <div v-if="errors.authentication" class="text-red-500">{{ errors.authentication }}</div>
 
         <form @submit.prevent="submit">
@@ -40,7 +41,14 @@
                     <input type="password" v-model="form.password" class="block w-full border-2 border-black rounded p-1 text-black">
                     <div v-if="errors.password" class="text-xs text-red-500">{{ errors.password }}</div>
                 </div>
-                
+
+                <div class="mb-3">
+                    <label>
+                        <input type="checkbox" v-model="form.remember" class="mr-3 border border-black"> Remember me on this computer ?
+                    </label>
+
+                </div>
+
                 <button class="border-2 border-black rounded py-1 px-5 mt-2 text-black text-2xl" type="submit">Login</button>
             </div>
         </form>

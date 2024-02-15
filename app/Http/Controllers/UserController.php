@@ -38,15 +38,15 @@ class UserController extends Controller
 
         $attributes = request()->validate([
             'email' => ['required', 'email'],
-            'password' => ['required']
+            'password' => ['required', 'string']
           ]);
-      
-          if (! auth()->attempt($attributes)) {
+
+          if (! auth()->attempt($attributes, request('remember') ?? false)) {
             return back()->withErrors(['authentication' => 'Incorrect email or password'])->withInput();
           }
-      
+
           session()->regenerate();
-          
+
           return redirect('/');
     }
 
@@ -101,7 +101,7 @@ class UserController extends Controller
 
         User::destroy(auth()->user()->id);
         auth()->logout();
-        
+
         return redirect('/');
     }
 
