@@ -9,6 +9,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Rules\NoAtSymbolRule;
 
 class UserController extends Controller
 {
@@ -16,14 +17,14 @@ class UserController extends Controller
     public function store() {
 
         $fields = request()->validate([
-            'name' => ['required', 'min:2', 'max:64'],
-            'email' => ['required', 'min:8', 'max:96', 'unique:App\Models\User,email'],
+            'username' => ['required', 'string', 'min:3', 'max:32', 'unique:App\Models\User,username', new NoAtSymbolRule],
+            'email' => ['required', 'email', 'min:6', 'max:96', 'unique:App\Models\User,email'],
             'password' => ['required', 'min:8', 'max:32'],
             'password_confirmation' => ['required', 'min:8', 'max:32', 'same:password']
         ]);
 
         $user = User::create([
-            'name' => $fields['name'],
+            'username' => $fields['username'],
             'email' => $fields['email'],
             'password' => Hash::make($fields['password']),
         ]);
@@ -37,11 +38,16 @@ class UserController extends Controller
     public function login() {
 
         $attributes = request()->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string']
-          ]);
+            'username' => ['required_without:email', 'nullable', 'string', 'min:3', 'max:32', new NoAtSymbolRule],
+            'email' => ['required_without:username', 'nullable', 'email', 'min:6', 'max:96'],
+            'password' => ['required', 'string', 'min:8', 'max:32'],
+            'remember' => ['required', 'boolean'],
+        ]);
 
-          if (! auth()->attempt($attributes, request('remember') ?? false)) {
+        $pass = ['password' => $attributes['password']];
+        $attributes = $attributes['username'] ? [...$pass, 'username' => $attributes['username']] : [...$pass, 'email' => $attributes['email']];
+
+        if (! Auth::attempt($attributes, request('remember'))) {
             return back()->withErrors(['authentication' => 'Incorrect email or password'])->withInput();
           }
 
@@ -62,11 +68,11 @@ class UserController extends Controller
 
         // validate
         $fields = request()->validate([
-            'name' => ['required', 'min:2', 'max:64'],
-            'email' => ['required', 'min:8', 'max:96', Rule::unique('users')->ignore(auth()->user()->id)],
+            'username' => ['required', 'string', 'min:3', 'max:32', Rule::unique('users')->ignore(auth()->user()->id), new NoAtSymbolRule],
+            'email' => ['required', 'email', 'min:6', 'max:96', Rule::unique('users')->ignore(auth()->user()->id)],
             'password' => ['required', 'min:8', 'max:32'],
-            'new_password' => ['nullable', 'min:8', 'max:32'],
-            'new_password_confirmation' => ['nullable', 'min:8', 'max:32', 'same:new_password']
+            'new_password' => ['required_with:new_password_confirmation', 'min:8', 'max:32'],
+            'new_password_confirmation' => ['required_with:new_password', 'min:8', 'max:32', 'same:new_password']
         ]);
 
         // check that the password is correct and return back with custom error if not
@@ -74,9 +80,9 @@ class UserController extends Controller
             return back()->withErrors(['password' => 'Incorrect password'])->withInput();
         }
 
-        // update the user name and email, and new password if necessary
+        // update the username and email, and new password if necessary
         $user = User::find(auth()->user()->id);
-        $user->name = $fields['name'];
+        $user->username = $fields['username'];
         $user->email = $fields['email'];
         if (isset($fields['new_password']) && $fields['new_password_confirmation']) {
             $user->password = Hash::make($fields['new_password']);

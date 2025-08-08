@@ -13,7 +13,7 @@
 
     <Layout page="Home Page" :user="user">
 
-        Welcome to my website <span v-if="user" class="font-bold">{{ user.name }}.</span> <span v-else>. You are not logged in.</span>
+        Welcome to my website <span v-if="user" class="font-bold">{{ user.username }}.</span> <span v-else>. You are not logged in.</span>
 
     </Layout>
 

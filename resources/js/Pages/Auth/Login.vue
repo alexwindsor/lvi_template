@@ -9,13 +9,24 @@
     })
 
     const form = reactive({
-        email: null,
+        username_email: null,
         password: null,
         remember: false
     });
 
     function submit() {
-        router.post(base_url + 'login', form)
+
+        let username = null, email = null
+        // check if they've given a username and an email
+        if (form.username_email?.includes('@')) email = form.username_email
+        else username = form.username_email
+
+        router.post(base_url + 'login', {
+            username: username,
+            email: email,
+            password: form.password,
+            remember: form.remember
+        })
     }
 </script>
 
@@ -29,17 +40,32 @@
         <form @submit.prevent="submit">
             <div class="m-auto w-full sm:w-2/3 lg:w-1/3 mt-16">
                 <div class="mb-3">
-                    Email:
+                    Username or Email:
                     <br>
-                    <input type="text" v-model="form.email" class="block w-full border-2 border-black rounded p-1 text-black">
+                    <input
+                        type="text"
+                        v-model="form.username_email"
+                        class="block w-full border-2 border-black rounded p-1 text-black"
+                        maxlength="96"
+                        minlength="3"
+                        required
+                    >
+                    <div v-if="errors.username" class="text-xs text-red-500">{{ errors.username }}</div>
                     <div v-if="errors.email" class="text-xs text-red-500">{{ errors.email }}</div>
                 </div>
 
                 <div class="mb-3">
                     Password:
                     <br>
-                    <input type="password" v-model="form.password" class="block w-full border-2 border-black rounded p-1 text-black">
-                    <div v-if="errors.password" class="text-xs text-red-500">{{ errors.password }}</div>
+                    <input
+                        type="password"
+                        v-model="form.password"
+                        class="block w-full border-2 border-black rounded p-1 text-black"
+                        maxlength="32"
+                        minlength="8"
+                        required
+                    >
+                    <div v-if="errors.password" maxlength="32" class="text-xs text-red-500">{{ errors.password }}</div>
                 </div>
 
                 <div class="mb-3">
