@@ -71,8 +71,8 @@ class UserController extends Controller
             'username' => ['required', 'string', 'min:3', 'max:32', Rule::unique('users')->ignore(auth()->user()->id), new NoAtSymbolRule],
             'email' => ['required', 'email', 'min:6', 'max:96', Rule::unique('users')->ignore(auth()->user()->id)],
             'password' => ['required', 'min:8', 'max:32'],
-            'new_password' => ['required_with:new_password_confirmation', 'min:8', 'max:32'],
-            'new_password_confirmation' => ['required_with:new_password', 'min:8', 'max:32', 'same:new_password']
+            'new_password' => ['required_with:new_password_confirmation', 'nullable', 'min:8', 'max:32'],
+            'new_password_confirmation' => ['required_with:new_password', 'nullable', 'min:8', 'max:32', 'same:new_password']
         ]);
 
         // check that the password is correct and return back with custom error if not
@@ -97,10 +97,10 @@ class UserController extends Controller
 
         // validate
         $fields = request()->validate([
-            'password' => ['required']
+            'password' => ['required', 'string', 'min:8', 'max:32']
         ]);
 
-        // check that the password is correct and return back with custom error if not
+        // check that the password is correct and return back with error if not
         if (! $this->authenticate($fields['password'])) {
             return back()->withErrors(['password' => 'Incorrect password'])->withInput();
         }

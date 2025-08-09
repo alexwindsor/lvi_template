@@ -17,17 +17,15 @@
         new_password_confirmation: '',
     });
 
-    function submit(delete_account) {
+    function submit() {
+        router.put(base_url + 'update_profile', form)
+    }
 
-        if (delete_account) {
-
-            if (confirm('Are you sure you want to permanently delete your account?\n\nThis cannot be undone.')) {
-                router.put(base_url + 'delete_account', form) // inertia doesn't allow sending data with router.delete unfortunately
-            }
-            else return false
+    function deleteAccount() {
+        if (confirm('Are you sure you want to permanently delete your account?\n\nThis cannot be undone.')) {
+            router.put(base_url + 'delete_account', { password: form.password })
         }
 
-        else  router.put(base_url + 'update_profile', form)
     }
 </script>
 
@@ -111,7 +109,11 @@
                     Update Profile
                 </button>
 
-                <button type="button" class="border-2 border-red-500 rounded p-1 mt-2 ml-5 text-red-500 text-base sm:text-2xl" @click="submit(true)">
+                <button
+                    type="button"
+                    class="border-2 border-red-500 rounded p-1 mt-2 ml-5 text-red-500 text-base sm:text-2xl"
+                    @click="deleteAccount(true)"
+                >
                     Delete Account
                 </button>
             </div>
