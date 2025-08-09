@@ -93,4 +93,11 @@ class RoutesTest extends TestCase
 
         $user->destroy($user->id);
     }
+
+    public function test_delete_account_route_cannot_be_reached_when_not_logged_in(): void
+    {
+        $response = $this->put('/delete_account');
+        $response->assertStatus(302);
+        $response->assertRedirect('/login');
+    }
 }
