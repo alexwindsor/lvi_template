@@ -1,10 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Controllers\UserController;
 
-
+// login / logout
 Route::get('/login', function () {
     return Inertia::render('Auth/Login');
 })->middleware('guest')->name('login');
@@ -19,12 +21,36 @@ Route::get('/logout', function () {
 
 Route::post('/logout', [UserController::class, 'logout'])->middleware('auth');
 
+
+// register and verify email
 Route::get('/register', function () {
     return Inertia::render('Auth/Register');
 })->middleware('guest')->name('register');
 
 Route::post('/register', [UserController::class, 'store'])->middleware('guest');
 
+Route::get('/verify_email', function () {
+    if (auth()->user()->hasVerifiedEmail()) return redirect('/');
+    return Inertia::render('Auth/VerifyEmail', [
+        'user' => auth()->user()
+    ]);
+})->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    if (auth()->user()->hasVerifiedEmail()) return redirect('/');
+    $request->fulfill();
+    return redirect('/');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    if (auth()->user()->hasVerifiedEmail()) return redirect('/');
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Verification link sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+
+
+// edit profile
 Route::get('/edit_profile', function () {
     return Inertia::render('Auth/EditProfile', [
         'user' => auth()->user()
@@ -32,6 +58,7 @@ Route::get('/edit_profile', function () {
 })->middleware('auth')->name('edit_profile');
 
 Route::put('/update_profile', [UserController::class, 'update'])->middleware('auth');
+
 
 // delete would be better method here but inertia doesn't send data using router.delete unfortunately - hopefully they will fix this in a newer version
 Route::put('/delete_account', [UserController::class, 'destroy'])->middleware('auth');

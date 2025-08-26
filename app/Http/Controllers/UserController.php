@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Auth\Events\Registered;
 use App\Models\User;
 use App\Rules\NoAtSymbolRule;
 
@@ -29,9 +27,11 @@ class UserController extends Controller
             'password' => Hash::make($fields['password']),
         ]);
 
+        event(new Registered($user));
+
         auth()->login($user);
 
-        return redirect('/');
+        return redirect('/verify_email');
     }
 
 

@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 use App\Models\User;
 
@@ -12,6 +14,8 @@ class RegisterTest extends TestCase
 
     public function test_user_can_register_with_correct_data(): void
     {
+        Notification::fake();
+
         $response = $this->post('/register', [
             'username' => 'Test Test',
             'email' => 'test@example.com',
@@ -20,11 +24,17 @@ class RegisterTest extends TestCase
         ]);
 
         $response->assertStatus(302);
-        $response->assertRedirect('/');
+        $response->assertRedirect('/verify_email');
         $this->assertAuthenticated();
+        $this->assertDatabaseHas('users', [
+            'email' => 'test@example.com',
+        ]);
 
-        User::where('email', 'test@example.test')->delete();
+        // check that verification email was sent
+        $user = User::where('email', 'test@example.com')->first();
+        Notification::assertSentTo($user, VerifyEmail::class);
     }
+
 
     public function test_user_cannot_register_with_incorrect_data(): void
     {
