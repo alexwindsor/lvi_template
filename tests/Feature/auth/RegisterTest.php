@@ -18,7 +18,7 @@ class RegisterTest extends TestCase
 
         $response = $this->post('/register', [
             'username' => 'Test Test',
-            'email' => 'test@example.com',
+            'email' => 'test@test.com',
             'password' => 'password',
             'password_confirmation' => 'password',
         ]);
@@ -27,11 +27,11 @@ class RegisterTest extends TestCase
         $response->assertRedirect('/verify_email');
         $this->assertAuthenticated();
         $this->assertDatabaseHas('users', [
-            'email' => 'test@example.com',
+            'email' => 'test@test.com',
         ]);
 
         // check that verification email was sent
-        $user = User::where('email', 'test@example.com')->first();
+        $user = User::where('email', 'test@test.com')->first();
         Notification::assertSentTo($user, VerifyEmail::class);
     }
 
