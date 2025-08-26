@@ -10,6 +10,8 @@
 
 <template>
 
+    {{  }}
+
   <div class="m-8">
 
     <h1 class="text-center text-5xl">
@@ -20,11 +22,14 @@
 
     <div class="text-sm m-3">
       <div v-if="user">
-        <Link :href="base_url + 'edit_profile'">Edit Profile</Link> | <Link :href="base_url + 'logout'">Logout</Link>
+          <Link :href="base_url + 'edit_profile'">Edit Profile</Link> |
+          <span v-if="! user.email_verified_at"><Link :href="base_url + 'verify_email'">Verify your email</Link> | </span>
+          <Link :href="base_url + 'logout'">Logout</Link>
       </div>
 
       <div v-else>
-        <Link :href="base_url + 'login'">Login</Link> | <Link :href="base_url + 'register'">Register</Link>
+        <Link :href="base_url + 'login'">Login</Link> |
+        <Link :href="base_url + 'register'">Register</Link>
       </div>
     </div>
 

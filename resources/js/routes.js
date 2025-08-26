@@ -2,6 +2,8 @@ import { createWebHistory, createRouter } from 'vue-router'
 
 const Home = () => import('./Pages/Home.vue')
 const Register = () => import('./Pages/Auth/Register.vue')
+const EditProfile = () => import('./Pages/Auth/EditProfile.vue')
+const VerifyEmail = () => import('./Pages/Auth/VerifyEmail.vue')
 const Login = () => import('./Pages/Auth/Login.vue')
 const Logout = () => import('./Pages/Auth/Logout.vue')
 
@@ -12,19 +14,29 @@ const routes = [
         component: Home
     },
     {
-        path: '/',
-        name: 'Register',
+        path: '/register',
+        name: 'register',
         component: Register
     },
     {
-        path: '/',
-        name: 'Login',
+        path: '/edit_profile',
+        name: 'edit_profile',
+        component: EditProfile
+    },
+    {
+        path: '/login',
+        name: 'login',
         component: Login
     },
     {
-        path: '/',
-        name: 'Logout',
+        path: '/logout',
+        name: 'logout',
         component: Logout
+    },
+    {
+        path: '/verify_email',
+        name: 'verification.notice',
+        component: VerifyEmail
     },
 ]
 
@@ -42,3 +54,7 @@ export default router
 //     name: 'NotFound',
 //     component: NotFound,
 // },
+
+
+
+

@@ -100,4 +100,35 @@ class RoutesTest extends TestCase
         $response->assertStatus(302);
         $response->assertRedirect('/login');
     }
+
+    public function test_verify_email_page_can_be_reached_when_logged_in_email_unverified(): void
+    {
+        // email not verified
+        $user = User::factory()->create(['email_verified_at' => null]);
+        $response = $this->actingAs($user)->get('/verify_email');
+        $response->assertStatus(200);
+
+        $user->destroy($user->id);
+    }
+
+    public function test_verify_email_page_can_be_reached_when_logged_in_email_verified(): void
+    {
+        // email verified
+        $user = User::factory()->create();
+        $response = $this->actingAs($user)->get('/verify_email');
+        $response->assertStatus(302);
+        $response->assertRedirect('/');
+
+        $user->destroy($user->id);
+    }
+
+    public function test_verify_email_page_cannot_be_reached_when_not_logged_in(): void
+    {
+        $response = $this->get('/verify_email');
+        $response->assertStatus(302);
+        $response->assertRedirect('/login');
+    }
+
+
+
 }
