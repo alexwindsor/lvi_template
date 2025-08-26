@@ -5,10 +5,14 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ResetPasswordController;
 
-// login / logout
+// login and logout logout
 Route::get('/login', function () {
-    return Inertia::render('Auth/Login');
+    return Inertia::render('Auth/Login', [
+        'email' =>  $_GET['email'] ?? null,
+        'reset_link_sent' => array_key_exists('reset_link_sent', $_GET)
+    ]);
 })->middleware('guest')->name('login');
 
 Route::post('/login', [UserController::class, 'login'])->middleware('guest');
@@ -49,6 +53,19 @@ Route::post('/email/verification-notification', function (Request $request) {
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 
+// forgot password, email password reset link
+Route::post('/forgot-password', [ResetPasswordController::class, 'sendEmail'])
+    ->middleware('guest')
+    ->name('password.email');
+
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'checkTokenBeforeResetPasswordPage'])
+    ->middleware('guest')
+    ->name('password.reset');
+
+Route::post('/reset-password/', [ResetPasswordController::class, 'updatePassword'])
+    ->middleware('guest')
+    ->name('password.update');
+
 
 // edit profile
 Route::get('/edit_profile', function () {
@@ -60,5 +77,5 @@ Route::get('/edit_profile', function () {
 Route::put('/update_profile', [UserController::class, 'update'])->middleware('auth');
 
 
-// delete would be better method here but inertia doesn't send data using router.delete unfortunately - hopefully they will fix this in a newer version
+// delete account
 Route::put('/delete_account', [UserController::class, 'destroy'])->middleware('auth');

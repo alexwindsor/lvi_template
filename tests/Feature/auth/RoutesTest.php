@@ -129,6 +129,22 @@ class RoutesTest extends TestCase
         $response->assertRedirect('/login');
     }
 
+    public function test_reset_password_route_cannot_be_reached_when_logged_in(): void
+    {
+        // email verified
+        $user = User::factory()->create();
+        $response = $this->actingAs($user)->get('/reset-password/some_token_here?email=' . $user->email);
+        $response->assertStatus(302);
+        $response->assertRedirect('/');
+
+        $user->destroy($user->id);
+    }
+
+    public function test_reset_password_route_can_be_reached_when_not_logged_in(): void
+    {
+        $response = $this->get('/reset-password/some_token_here?email=test@test.com');
+        $response->assertStatus(200);
+    }
 
 
 }
